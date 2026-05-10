@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pure Relax V3 - Mobile Optimized</title>
+    <title>Pure Relax V3 - Full Frame Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;900&display=swap');
@@ -39,47 +39,53 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.05);
             animation: float 4s ease-in-out infinite;
             display: flex; align-items: center; justify-content: center;
-            position: relative;
         }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
         .btn-start {
-            padding: 0.8rem 3rem; background: #3d3935; color: white;
+            padding: 0.8rem 3.5rem; background: #3d3935; color: white;
             border-radius: 100px; font-weight: 700; font-size: 1rem;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
         }
 
-        /* 캔버스 */
         canvas { touch-action: none; cursor: pointer; display: block; outline: none; }
 
-        /* 힐링 메시지 - 상단으로 밀착 */
+        /* 메시지 칩 - 상단 배치 */
         #comfort-message {
-            position: fixed; top: calc(env(safe-area-inset-top) + 15px); left: 50%; transform: translateX(-50%);
+            position: fixed; top: calc(env(safe-area-inset-top) + 80px); left: 50%; transform: translateX(-50%);
             z-index: 50; pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            opacity: 0; width: auto; max-width: 80vw;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0; width: 100%; display: flex; justify-content: center;
         }
-        #comfort-message.show { opacity: 1; transform: translateX(-50%) translateY(5px); }
+        #comfort-message.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .message-pill {
+            font-weight: 700; color: #e11d48;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 12px 28px; border-radius: 100px;
+            border: 1px solid rgba(225, 29, 72, 0.15);
+            white-space: nowrap; font-size: 13px; max-width: 90vw;
+            overflow: hidden; text-overflow: ellipsis;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        }
 
-        /* 액션 도크 - 우상단 구석으로 */
+        /* 액션 컨트롤 도크 */
         .action-dock {
             position: fixed; top: calc(env(safe-area-inset-top) + 12px); right: 12px; z-index: 100;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 14px; padding: 2px;
-            display: flex; flex-direction: row; gap: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 16px; padding: 3px;
+            display: flex; flex-direction: row; gap: 2px;
         }
 
         .btn-action {
             width: 32px; height: 32px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 10px; background: transparent; color: #777;
+            border-radius: 12px; background: transparent; color: #666;
             transition: all 0.2s; position: relative;
         }
         .btn-action svg { width: 14px; height: 14px; }
-        .btn-action:active { background: rgba(255,255,255,0.4); transform: scale(0.9); }
 
         .recording-dot {
             position: absolute; top: 4px; right: 4px; width: 4px; height: 4px;
@@ -87,20 +93,21 @@
             animation: pulse 1s infinite;
         }
         .is-recording .recording-dot { display: block; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
-        /* 상태바 - 좌측 하단 구석으로 (가로모드 대응) */
+        /* 상태바 */
         .status-pill {
             position: fixed; bottom: calc(env(safe-area-inset-bottom) + 15px); left: 15px;
-            background: rgba(45, 42, 38, 0.8);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(45, 42, 38, 0.85);
+            backdrop-filter: blur(15px);
             padding: 4px 18px; border-radius: 100px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             display: flex; align-items: center; gap: 12px; color: white;
             z-index: 100; pointer-events: none;
         }
         .counter-val { font-weight: 900; font-size: 1.4rem; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
 
-        /* 설정 사이드바 - 모바일 기본 숨김 */
+        /* 설정 사이드바 */
         .sidebar-panel { 
             position: fixed; left: 0; right: 0; bottom: 0;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -110,24 +117,23 @@
         .sidebar-panel.active { transform: translateY(0); }
         .sidebar-content {
             background: white; width: 100%; max-width: 450px;
-            border-radius: 2.5rem 2.5rem 0 0; padding: 2rem;
-            box-shadow: 0 -15px 50px rgba(0,0,0,0.08);
+            border-radius: 2.5rem 2.5rem 0 0; padding: 2.2rem;
+            box-shadow: 0 -15px 50px rgba(0,0,0,0.1);
         }
         
-        input[type=range] { appearance: none; background: rgba(0,0,0,0.06); height: 4px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; background: #3d3935; border-radius: 50%; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-
-        /* 가로 모드일 때 레이아웃 최적화 */
         @media (orientation: landscape) {
-            #comfort-message { top: 10px; }
-            .action-dock { top: auto; bottom: 12px; right: 12px; }
-            .status-pill { bottom: 12px; left: 12px; }
-            .sidebar-panel { left: auto; right: 0; top: 0; bottom: 0; transform: translateX(105%); width: 300px; }
+            #comfort-message { top: 15px; }
+            .action-dock { top: auto; bottom: 15px; right: 15px; }
+            .status-pill { bottom: 15px; left: 15px; }
+            .sidebar-panel { left: auto; right: 0; top: 0; bottom: 0; transform: translateX(105%); width: 320px; }
             .sidebar-panel.active { transform: translateX(0); }
             .sidebar-content { border-radius: 2.5rem 0 0 2.5rem; height: 100%; }
         }
 
-        .ai-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.15); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; }
+        input[type=range] { appearance: none; background: rgba(0,0,0,0.06); height: 4px; border-radius: 10px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; background: #3d3935; border-radius: 50%; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .ai-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; }
         .ai-modal.active { display: flex; }
     </style>
 </head>
@@ -135,22 +141,20 @@
 
     <!-- [1] 인트로 화면 -->
     <div id="intro-screen">
-        <div class="intro-logo">
-            <span class="text-4xl">🧸</span>
-        </div>
+        <div class="intro-logo"><span class="text-4xl">🧸</span></div>
         <h1 class="text-xl font-black text-stone-800 mb-1">Pure Relax</h1>
-        <p class="text-stone-400 mb-8 text-center text-sm leading-relaxed px-10">지친 마음을 말랑하게 녹여줄게요.</p>
-        <button class="btn-start" onclick="startApp()">시작하기</button>
+        <p class="text-stone-400 mb-8 text-center text-sm leading-relaxed px-10">오늘도 고생한 당신을 위해,<br/>사이다 같은 위로를 준비했어요.</p>
+        <button class="btn-start shadow-xl" onclick="startApp()">시작하기</button>
     </div>
 
     <!-- [2] 힐링 메시지 -->
     <div id="comfort-message">
-        <div class="font-bold text-stone-500 bg-white/70 backdrop-blur-lg py-2 px-6 rounded-full border border-white/80 shadow-sm inline-block text-xs md:text-sm">
+        <div class="message-pill font-bold">
             인형을 주물러 보세요...
         </div>
     </div>
 
-    <!-- [3] 액션 도크 -->
+    <!-- [3] 액션 컨트롤 도크 -->
     <div class="action-dock" id="main-dock">
         <button class="btn-action" title="업로드" onclick="triggerFileInput()">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -170,11 +174,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
         
-        <button class="btn-action" onclick="toggleMute()">
-            <span id="sound-icon-svg">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-            </span>
-        </button>
+        <button class="btn-action" onclick="toggleMute()"><span id="sound-icon-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span></button>
     </div>
 
     <!-- [4] 상태바 -->
@@ -199,7 +199,7 @@
                 </div>
             </div>
             <button onclick="resetImage()" class="w-full mt-8 py-3 bg-stone-50 text-stone-400 font-bold rounded-xl text-[11px] tracking-widest hover:bg-rose-50 hover:text-rose-500 transition-all">초기화</button>
-            <button onclick="toggleSidebar()" class="w-full mt-3 py-3 bg-stone-800 text-white font-bold rounded-xl text-[11px] tracking-widest">닫기</button>
+            <button onclick="toggleSidebar()" class="w-full mt-3 py-3 bg-stone-800 text-white font-bold rounded-xl text-[11px] tracking-widest">확인</button>
         </div>
     </div>
 
@@ -247,11 +247,23 @@
         const apiKey = ""; 
         const moodSteps = ['😩','😟','😐','🙂','😊','🥰','🤩'];
 
-        function startApp() {
-            initAudio(); 
-            intro.classList.add('hidden');
-            setTimeout(() => updateMessage("인형이 당신을 기다렸어요!"), 1000);
-        }
+        const catharticMessages = [
+            "인생 참 엿같다, 그치?", "그 인간 면상이라 생각하고 꽉 눌러!", "지랄도 풍년이라더니 오늘이 딱이네.", "퇴사가 답인가...", "오늘 너 건드린 놈, 대대손손 탈모 와라!",
+            "다 때려치우고 싶다 진짜...", "아무것도 안 하고 싶다. 이미 안 하고 있지만...", "내 통장은 왜 스쳐 지나가는 통로일 뿐인가.", "세상은 넓고 미친놈은 더 많다.", "부장놈 얼굴 여기다 합성하고 싶지?",
+            "시X... 소리가 절로 나오네.", "적게 일하고 많이 벌게 해주세요 제발.", "오늘 하루 진짜 고생했어, 이 개 같은 세상에서.", "돈 많은 백수가 꿈입니다.", "인간관계? 다 부질없다 주물러버려!",
+            "내일 지구가 멸망했으면 좋겠어.", "월요일이 오지 않게 해주세요.", "개소리를 정성스럽게 하네 그 인간은.", "웃어주니까 가마니로 보이나?", "법만 없었으면 진짜...",
+            "참는 자에게 복이 오는 게 아니라 병이 온다.", "빡치면 팍팍 눌러, 내가 다 받아줄게.", "오늘 너 건드린 사람, 발가락 문지방에 찧어라!",
+            "아... 진짜 욕나오게 하네.", "내가 뭘 그렇게 잘못했다고!", "운전 똑바로 안 하냐 이 멍청아!", "당신의 빡침을 응원합니다.",
+            "지랄병은 약도 없다더라.", "말이야 방구야?", "왜 나한테만 그래 진짜!", "지갑도 텅, 마음도 텅.",
+            "야! 소리 한번 크게 지르고 싶지?", "인생은 실전이야 꼬마야...", "돈이 최고다 역시.", "당신의 분노는 정당합니다.",
+            "다 부숴버리고 싶다!", "잠 좀 자자 인간들아!", "왜 나만 일하는 거 같지?", "공짜로 부려 먹으려고 아주...", "갑질 하는 놈들은 다 천벌 받을 거야.",
+            "다이어트는 내일부터, 스트레스는 지금 당장!", "어차피 인생은 마이웨이.", "남의 시선? 엿이나 먹으라 그래.", "손맛 좋지? 그 인간 멱살 대신이야.", "스트레스는 쌓아두면 똥 된다.",
+            "오늘은 술 한잔 각이다.", "울어도 돼, 근데 주무르면서 울어.", "인생 노잼 시기... 팍팍 눌러!", "뭐가 문제야 대체!", "답정너는 답이 없다.", "내 인생의 주인공은 난데, 왜 조연 같지?", "행복? 그게 먹는 건가요?", 
+            "탈출은 지능 순이라는데 난 왜 여기 있나.", "오늘 하루도 버티느라 수고했어, 대견해.", "이 구역의 미친X은 나야!", "말 걸지 마라 진짜 빡친다.",
+            "주물주물, 니 화를 다 가져갈게.", "인형이 터질 때까지 화풀이해!", "기분이 태도가 되지 말자는데, 기분이 쓰레기인걸 어떡해!", "착하게 살면 손해 보는 세상.", "수고했어, 오늘도. 진심으로."
+        ];
+
+        function startApp() { initAudio(); intro.classList.add('hidden'); updateMessage("인형이 당신의 빡침(?)을 기다렸어요!"); }
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
@@ -272,17 +284,17 @@
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
             osc.type = 'sine'; osc.frequency.setValueAtTime(1200 + Math.random() * 400, now);
-            osc.frequency.exponentialRampToValueAtTime(400, now + 0.12);
-            g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-            osc.connect(g); g.connect(audioCtx.destination); osc.start(); osc.stop(now + 0.12);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+            g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            osc.connect(g); g.connect(audioCtx.destination); osc.start(); osc.stop(now + 0.1);
 
-            const grainCount = 6;
+            const grainCount = 5;
             for(let i=0; i<grainCount; i++) {
                 const st = now + (i * 0.01); const dur = 0.02 + Math.random() * 0.03;
                 const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0); for(let k=0; k<data.length; k++) data[k] = Math.random() * 2 - 1;
                 const s = audioCtx.createBufferSource(); s.buffer = buffer;
-                const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.setValueAtTime(3200 + Math.random()*1500, st);
+                const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.setValueAtTime(3200 + Math.random()*2000, st);
                 const g2 = audioCtx.createGain(); g2.gain.setValueAtTime(0.012, st); g2.gain.exponentialRampToValueAtTime(0.001, st + dur);
                 s.connect(f); f.connect(g2); g2.connect(audioCtx.destination); s.start(st);
             }
@@ -312,14 +324,15 @@
         function triggerPop() {
             isPopped = true; playPopSound(); const cx = width / 2; const cy = height / 2;
             for(let i=0; i<50; i++) cottonParticles.push(new Cotton(cx, cy));
-            updateMessage("앗! 치료가 필요해요! 금방 고쳐줄게요 ✨");
-            setTimeout(() => { isPopped = false; squishCount = 0; counterEl.innerText = "0"; emojiEl.innerText = moodSteps[0]; updateMessage("다시 주물러보세요!"); }, 4000);
+            updateMessage("앗! 치료가 필요해요! 금방 고쳐줄게요 ✨", true);
+            setTimeout(() => { isPopped = false; squishCount = 0; counterEl.innerText = "0"; emojiEl.innerText = moodSteps[0]; updateMessage("다시 주물러보세요!", true); }, 4000);
         }
 
         function checkInDoll(x, y) {
             const dx = x - width / 2;
             const dy = y - (height / 2 + imgYOffset * (ballSize/800));
-            return Math.sqrt(dx*dx + dy*dy) < ballSize * 0.45;
+            // 판정 범위를 넉넉하게 사진 전체로 확장
+            return Math.abs(dx) < ballSize * 0.5 && Math.abs(dy) < ballSize * 0.5;
         }
 
         function triggerFileInput() { fileInput.click(); }
@@ -342,7 +355,7 @@
                 const stepIdx = Math.min(Math.floor(squishCount / 14.3), 6);
                 if (emojiEl.innerText !== moodSteps[stepIdx]) { emojiEl.innerText = moodSteps[stepIdx]; emojiEl.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 250 }); }
                 if (squishCount >= 100) triggerPop();
-                else { playCheerfulRustle(); if(squishCount % 15 === 0) updateMessage(); }
+                else { playCheerfulRustle(); updateMessage(); }
             }
         };
 
@@ -352,39 +365,39 @@
         canvas.addEventListener('mousedown', (e) => handleInteractionStart('mouse', e.clientX, e.clientY));
         window.addEventListener('mousemove', (e) => handleInteractionMove('mouse', e.clientX, e.clientY));
         window.addEventListener('mouseup', () => handleInteractionEnd('mouse'));
-        // 원 클릭 시 업로드 트리거 (이미지 없을 때만)
-        canvas.addEventListener('click', (e) => {
-            if (!userImg && checkInDoll(e.clientX, e.clientY)) triggerFileInput();
-        });
-        canvas.addEventListener('touchstart', (e) => { if (e.cancelable) e.preventDefault(); for (let i = 0; i < e.changedTouches.length; i++) handleInteractionStart(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); }, { passive: false });
+        canvas.addEventListener('click', (e) => { if (!userImg && checkInDoll(e.clientX, e.clientY)) triggerFileInput(); });
+        canvas.addEventListener('touchstart', (e) => { 
+            if (e.cancelable) e.preventDefault(); 
+            const t = e.changedTouches[0];
+            if (!userImg && checkInDoll(t.clientX, t.clientY)) { triggerFileInput(); return; }
+            for (let i = 0; i < e.changedTouches.length; i++) handleInteractionStart(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); 
+        }, { passive: false });
         window.addEventListener('touchmove', (e) => { for (let i = 0; i < e.changedTouches.length; i++) handleInteractionMove(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); }, { passive: true });
         window.addEventListener('touchend', (e) => { for (let i = 0; i < e.changedTouches.length; i++) handleInteractionEnd(e.changedTouches[i].identifier); });
 
-        const msgs = ["당신은 소중해요.", "잠시 숨을 골라보세요.", "오늘 하루도 잘 버텼어요.", "모두 다 잘 될 거예요.", "걱정은 인형에 담아버려요."];
-        function updateMessage(txt) {
+        let lastIdx = -1;
+        function updateMessage(forceTxt) {
+            let nextIdx;
+            do { nextIdx = Math.floor(Math.random() * catharticMessages.length); } while (nextIdx === lastIdx);
+            lastIdx = nextIdx;
             messageEl.classList.remove('show');
             setTimeout(() => {
-                const displayTxt = txt || msgs[Math.floor(Math.random()*msgs.length)];
+                const displayTxt = forceTxt || catharticMessages[nextIdx];
                 messageEl.children[0].innerText = displayTxt;
                 messageEl.classList.add('show');
-                setTimeout(() => { if (messageEl.children[0].innerText === displayTxt && !txt) messageEl.classList.remove('show'); }, 4000);
-            }, 300);
+                if (!forceTxt) { setTimeout(() => { if (messageEl.children[0].innerText === displayTxt) messageEl.classList.remove('show'); }, 3000); }
+            }, 50);
         }
 
-        function initMesh() {
-            mesh = []; for (let r = 0; r <= meshRes; r++) for (let c = 0; c <= meshRes; c++) mesh.push({ ox: c/meshRes-0.5, oy: r/meshRes-0.5, cx: c/meshRes-0.5, cy: r/meshRes-0.5, vx: 0, vy: 0 });
-        }
-        
         function resize() {
             width = window.innerWidth; height = window.innerHeight; 
             canvas.width = width * devicePixelRatio; canvas.height = height * devicePixelRatio; 
             canvas.style.width = width+'px'; canvas.style.height = height+'px'; 
             ctx.scale(devicePixelRatio, devicePixelRatio); 
-            // 가로모드/세로모드에 따른 인형 크기 극대화
-            if (width > height) ballSize = height * 0.95;
-            else ballSize = width * 0.92;
+            if (width > height) ballSize = height * 0.95; else ballSize = width * 0.95;
             initMesh();
         }
+        function initMesh() { mesh = []; for (let r = 0; r <= meshRes; r++) for (let c = 0; c <= meshRes; c++) mesh.push({ ox: c/meshRes-0.5, oy: r/meshRes-0.5, cx: c/meshRes-0.5, cy: r/meshRes-0.5, vx: 0, vy: 0 }); }
         window.addEventListener('resize', resize); resize();
 
         function updatePhysics() {
@@ -407,14 +420,13 @@
 
         function render() {
             ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); ctx.clearRect(0, 0, width, height); updatePhysics();
+            const cx = width / 2, cy = height / 2, s = ballSize;
             if (userImg && !isPopped) {
-                const cx = width / 2, cy = height / 2, s = ballSize;
+                // 원형 마스킹(clip)을 제거하여 사각형 사진 전체가 보이도록 함
                 for (let r = 0; r < meshRes; r++) { for (let c = 0; c < meshRes; c++) { const i0 = r*(meshRes+1)+c, i1 = i0+1, i2 = i0+(meshRes+1), i3 = i2+1; const p0 = mesh[i0], p1 = mesh[i1], p2 = mesh[i2], p3 = mesh[i3]; const getSX = (p) => (p.ox + 0.5) * userImg.width / imgZoom + (userImg.width * (1 - 1/imgZoom) / 2); const getSY = (p) => (p.oy + 0.5) * userImg.height / imgZoom + (userImg.height * (1 - 1/imgZoom) / 2) - imgYOffset/imgZoom; drawTriangle(userImg, cx + p0.cx*s, cy + p0.cy*s, cx + p1.cx*s, cy + p1.cy*s, cx + p2.cx*s, cy + p2.cy*s, getSX(p0), getSY(p0), getSX(p1), getSY(p1), getSX(p2), getSY(p2)); drawTriangle(userImg, cx + p1.cx*s, cy + p1.cy*s, cx + p3.cx*s, cy + p3.cy*s, cx + p2.cx*s, cy + p2.cy*s, getSX(p1), getSY(p1), getSX(p3), getSY(p3), getSX(p2), getSY(p2)); } }
                 activeTouches.forEach(pos => { const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, ballSize*0.2); g.addColorStop(0, 'rgba(0,0,0,0.04)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fill(); });
             } else if (!userImg && !isPopped) { 
-                ctx.beginPath(); ctx.arc(width/2, height/2, ballSize/3.5, 0, Math.PI*2); ctx.fillStyle = 'white'; ctx.fill(); 
-                ctx.strokeStyle = '#DDD'; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.fillStyle = '#BBB'; ctx.font = 'bold 12px Pretendard'; ctx.textAlign = 'center'; 
-                ctx.fillText('자신만의 인형을 올려보세요', width/2, height/2 + 5); 
+                ctx.beginPath(); ctx.arc(cx, cy, ballSize/3.5, 0, Math.PI*2); ctx.fillStyle = 'white'; ctx.fill(); ctx.strokeStyle = '#DDD'; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.fillStyle = '#BBB'; ctx.font = 'bold 12px Pretendard'; ctx.textAlign = 'center'; ctx.fillText('자신만의 인형을 올려보세요', cx, cy + 5); 
             }
             cottonParticles.forEach(c => c.draw()); requestAnimationFrame(render);
         }
@@ -432,8 +444,8 @@
                 chunks = []; const stream = canvas.captureStream(30); mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
                 mediaRecorder.ondataavailable = e => chunks.push(e.data);
                 mediaRecorder.onstop = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(chunks, { type: 'video/webm' })); a.download = `relax-${Date.now()}.webm`; a.click(); };
-                mediaRecorder.start(); document.body.classList.add('is-recording'); updateMessage("녹화 중...");
-            } else { mediaRecorder.stop(); document.body.classList.remove('is-recording'); updateMessage("저장 완료!"); }
+                mediaRecorder.start(); document.body.classList.add('is-recording'); updateMessage("녹화 중...", true);
+            } else { mediaRecorder.stop(); document.body.classList.remove('is-recording'); updateMessage("저장 완료!", true); }
         }
 
         function openAI() { initAudio(); aiModal.classList.add('active'); aiInput.focus(); }
@@ -441,17 +453,17 @@
         async function getAIHealing() {
             const input = aiInput.value.trim(); if (!input) return; aiSubmit.disabled = true; aiSubmit.innerHTML = '<span class="loader"></span>';
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const payload = { contents: [{ parts: [{ text: `고민: "${input}"` }] }], systemInstruction: { parts: [{ text: "당신은 따뜻한 위로를 건네는 인형 친구입니다. 아주 부드럽고 다정한 말투로 한두 문장만 말해주세요." }] } };
+            const payload = { contents: [{ parts: [{ text: `고민: "${input}"` }] }], systemInstruction: { parts: [{ text: "당신은 아주 솔직하고 사이다 같은 위로를 건네는 인형 친구입니다. 가끔은 같이 욕도 해주고 속 시원한 한두 문장만 말해주세요." }] } };
             let text = "괜찮아요, 제가 곁에 있을게요.";
             try { const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }); const json = await res.json(); text = json.candidates?.[0]?.content?.parts?.[0]?.text || text; } catch(e){}
-            aiSubmit.disabled = false; aiSubmit.innerHTML = '위로 받기'; aiInput.value = ''; closeAI(); updateMessage(text);
+            aiSubmit.disabled = false; aiSubmit.innerHTML = '위로 받기'; aiInput.value = ''; closeAI(); updateMessage(text, true);
             if (!isMuted) {
                 const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
                 const ttsP = { contents: [{ parts: [{ text: `Say warmly: ${text}` }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } }, model: "gemini-2.5-flash-preview-tts" };
                 try { const r = await fetch(ttsUrl, { method:'POST', body: JSON.stringify(ttsP)}); const j = await r.json(); new Audio(URL.createObjectURL(pcmToWav(j.candidates[0].content.parts[0].inlineData.data, 24000))).play(); } catch(e){}
             }
         }
-        function pcmToWav(b64, rate) { const bin = atob(b64), len = bin.length, bytes = new Int16Array(len / 2); for (let i = 0; i < len / 2; i++) bytes[i] = (bin.charCodeAt(i * 2) | (bin.charCodeAt(i * 2 + 1) << 8)); const buf = new ArrayBuffer(44 + bytes.length * 2), view = new DataView(buf); const write = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); }; write(0,'RIFF'); view.setUint32(4, 36 + bytes.length * 2, true); write(8, 'WAVE'); write(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, rate, true); view.setUint32(28, rate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); write(36, 'data'); view.setUint32(40, bytes.length * 2, true); for (let i = 0; i < bytes.length; i++) view.setInt16(44 + i * 2, bytes[i], true); return new Blob([buf], { type: 'audio/wav' }); }
+        function pcmToWav(b64, rate) { const bin = atob(b64), len = bin.length, bytes = new Int16Array(len / 2); for (let i = 0; i < len / 2; i++) bytes[i] = (bin.charCodeAt(i * 2) | (binary.charCodeAt(i * 2 + 1) << 8)); const buf = new ArrayBuffer(44 + bytes.length * 2), view = new DataView(buf); const write = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); }; write(0,'RIFF'); view.setUint32(4, 36 + bytes.length * 2, true); write(8, 'WAVE'); write(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, rate, true); view.setUint32(28, rate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); write(36, 'data'); view.setUint32(40, bytes.length * 2, true); for (let i = 0; i < bytes.length; i++) view.setInt16(44 + i * 2, bytes[i], true); return new Blob([buf], {type:'audio/wav'}); }
     </script>
 </body>
 </html>
