@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pure Relax V3 - Perfect Fit & Zoom</title>
+    <title>Pure Relax V3 - Healing Game Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;900&display=swap');
@@ -34,17 +34,18 @@
         #intro-screen.hidden { opacity: 0; visibility: hidden; }
 
         .btn-start {
-            padding: 0.8rem 4rem; background: #3d3935; color: white;
+            padding: 1rem 4rem; background: #3d3935; color: white;
             border-radius: 100px; font-weight: 700; font-size: 1.1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            cursor: pointer; transform: scale(1); transition: transform 0.2s;
         }
+        .btn-start:active { transform: scale(0.95); }
 
         canvas { touch-action: none; cursor: pointer; display: block; outline: none; }
 
-        /* 메시지 칩 - 상단 고정 및 한 줄 강제 */
+        /* 메시지 칩 - 상단 고정 */
         #comfort-message {
-            position: fixed; top: calc(env(safe-area-inset-top) + 75px); left: 50%; transform: translateX(-50%);
+            position: fixed; top: calc(env(safe-area-inset-top) + 80px); left: 50%; transform: translateX(-50%);
             z-index: 50; pointer-events: none;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             opacity: 0; width: 100%; display: flex; justify-content: center;
@@ -54,40 +55,52 @@
             font-weight: 700; color: #e11d48;
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 10px 24px; border-radius: 100px;
+            padding: 12px 28px; border-radius: 100px;
             border: 1px solid rgba(225, 29, 72, 0.1);
-            white-space: nowrap; font-size: 13px; max-width: 88vw;
+            white-space: nowrap; font-size: 14px; max-width: 90vw;
             overflow: hidden; text-overflow: ellipsis;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
-        /* 컨트롤 도크 - 우상단 */
+        /* 컨트롤 도크 */
         .action-dock {
-            position: fixed; top: calc(env(safe-area-inset-top) + 12px); right: 12px; z-index: 100;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 14px; padding: 2px;
-            display: flex; flex-direction: row; gap: 1px;
+            position: fixed; top: calc(env(safe-area-inset-top) + 16px); right: 16px; z-index: 100;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px; padding: 4px;
+            display: flex; flex-direction: row; gap: 2px;
         }
 
         .btn-action {
-            width: 32px; height: 32px;
+            width: 36px; height: 36px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 10px; background: transparent; color: #666;
+            border-radius: 14px; background: transparent; color: #555;
             transition: all 0.2s; position: relative;
         }
-        .btn-action svg { width: 14px; height: 14px; }
+        .btn-action svg { width: 16px; height: 16px; }
+        .active-red { color: #f43f5e; }
 
-        /* 상태바 - 좌측 하단 */
-        .status-pill {
-            position: fixed; bottom: calc(env(safe-area-inset-bottom) + 15px); left: 15px;
-            background: rgba(45, 42, 38, 0.8);
-            backdrop-filter: blur(15px);
-            padding: 4px 18px; border-radius: 100px;
-            display: flex; align-items: center; gap: 10px; color: white;
-            z-index: 100; pointer-events: none;
+        /* BGM 정보 라벨 (버튼 아래 분리) */
+        #bgm-info-pill {
+            position: fixed; top: calc(env(safe-area-inset-top) + 60px); right: 16px;
+            background: #2d2a26; color: white;
+            padding: 4px 14px; border-radius: 8px; font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            opacity: 0; transition: opacity 0.5s; z-index: 90; pointer-events: none;
         }
-        .counter-val { font-weight: 900; font-size: 1.2rem; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+
+        /* 하단 상태바 (카운터 전용) */
+        .status-pill {
+            position: fixed; bottom: calc(env(safe-area-inset-bottom) + 20px); left: 20px;
+            background: rgba(45, 42, 38, 0.88);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            padding: 6px 24px; border-radius: 100px;
+            display: flex; align-items: center; gap: 14px; color: white;
+            z-index: 100; pointer-events: none;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        .counter-val { font-weight: 900; font-size: 1.6rem; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
 
         /* 설정 사이드바 */
         .sidebar-panel { 
@@ -99,70 +112,88 @@
         .sidebar-panel.active { transform: translateY(0); }
         .sidebar-content {
             background: white; width: 100%; max-width: 450px;
-            border-radius: 2.5rem 2.5rem 0 0; padding: 2rem;
-            box-shadow: 0 -15px 50px rgba(0,0,0,0.1);
+            border-radius: 3rem 3.5rem 0 0; padding: 2.5rem;
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.1);
         }
         
-        input[type=range] { appearance: none; background: rgba(0,0,0,0.06); height: 4px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; background: #3d3935; border-radius: 50%; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        input[type=range] { appearance: none; background: rgba(0,0,0,0.06); height: 6px; border-radius: 10px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 24px; height: 24px; background: #3d3935; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; }
 
         @media (orientation: landscape) {
             #comfort-message { top: 15px; }
-            .action-dock { top: auto; bottom: 12px; right: 12px; }
-            .status-pill { bottom: 12px; left: 12px; }
+            .action-dock { top: auto; bottom: 15px; right: 15px; }
+            #bgm-info-pill { top: auto; bottom: 58px; right: 16px; }
+            .status-pill { bottom: 15px; left: 15px; }
         }
-
-        .ai-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .ai-modal.active { display: flex; }
     </style>
 </head>
 <body>
 
+    <!-- [1] 인트로 화면 -->
     <div id="intro-screen">
-        <div class="intro-logo"><span class="text-4xl">🧸</span></div>
-        <h1 class="text-xl font-black text-stone-800 mb-1">Pure Relax</h1>
-        <p class="text-stone-400 mb-8 text-center text-sm leading-relaxed px-10">첫 화면은 안 잘리게 딱 맞게,<br/>확대해도 자유롭게 주무를 수 있어요.</p>
+        <div class="intro-logo text-5xl">🧸</div>
+        <h1 class="text-2xl font-black text-stone-800 mb-2 mt-4 uppercase tracking-tighter">Pure Relax V3</h1>
+        <p class="text-stone-400 mb-10 text-center text-sm leading-relaxed px-12">조물조물!<br/>스트레스 다 날라가라.</p>
         <button class="btn-start" onclick="startApp()">시작하기</button>
     </div>
 
+    <!-- [2] 힐링 메시지 -->
     <div id="comfort-message">
-        <div class="message-pill font-bold">인형을 주물러 보세요...</div>
+        <div class="message-pill">인형을 주물러 보세요...</div>
     </div>
 
+    <!-- [3] BGM 정보 라벨 -->
+    <div id="bgm-info-pill">Track 1: Sunshine Town</div>
+
+    <!-- [4] 액션 컨트롤 도크 -->
     <div class="action-dock" id="main-dock">
-        <button class="btn-action" title="업로드" onclick="triggerFileInput()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
+        <button class="btn-action" title="업로드" onclick="triggerFileInput()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </button>
         <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleImage(event)">
-        <button onclick="toggleRecording()" class="btn-action" id="record-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><div class="recording-dot"></div></button>
-        <button onclick="openAI()" class="btn-action"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></button>
-        <button onclick="toggleSidebar()" class="btn-action"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        <button class="btn-action" onclick="toggleMute()"><span id="sound-icon-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span></button>
+        
+        <button onclick="changeTrack()" class="btn-action" id="music-btn" title="배경음악 체인지">
+            <svg id="music-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </button>
+
+        <button onclick="toggleSidebar()" class="btn-action" title="설정">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        
+        <button id="sound-toggle-btn" class="btn-action" onclick="toggleMute()" title="효과음 켜기/끄기">
+            <span id="sound-icon-svg-box">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </span>
+        </button>
     </div>
 
+    <!-- [5] 상태바 -->
     <div class="status-pill">
-        <div id="mood-emoji" class="text-xl transition-all duration-300">😩</div>
-        <div class="w-[1px] h-4 bg-white/20"></div>
+        <div id="mood-emoji" class="text-3xl transition-all duration-300">😩</div>
+        <div class="w-[1.5px] h-6 bg-white/20"></div>
         <div id="squish-counter" class="counter-val">0</div>
     </div>
 
+    <!-- [6] 설정 사이드바 -->
     <div id="sidebar" class="sidebar-panel">
         <div class="sidebar-content shadow-2xl">
-            <div class="w-12 h-1 bg-stone-100 rounded-full mx-auto mb-6"></div>
-            <div class="space-y-6">
-                <div class="space-y-3">
-                    <label class="text-[11px] font-black text-stone-400 flex justify-between uppercase tracking-widest"><span>확대 정도 (Zoom)</span><span id="zoom-val" class="font-mono text-stone-800">1.0x</span></label>
+            <div class="w-12 h-1 bg-stone-100 rounded-full mx-auto mb-8"></div>
+            <div class="space-y-8">
+                <div class="space-y-4">
+                    <label class="text-[11px] font-black text-stone-400 flex justify-between px-1 uppercase tracking-widest"><span>확대 정도</span><span id="zoom-val" class="text-stone-800">1.0x</span></label>
                     <input type="range" id="zoom-slider" min="1.0" max="5.0" step="0.05" value="1.0">
                 </div>
-                <div class="space-y-3">
-                    <label class="text-[11px] font-black text-stone-400 flex justify-between uppercase tracking-widest"><span>상하 위치 조정</span><span id="offset-val" class="font-mono text-stone-800">0</span></label>
+                <div class="space-y-4">
+                    <label class="text-[11px] font-black text-stone-400 flex justify-between px-1 uppercase tracking-widest"><span>상하 위치 조정</span><span id="offset-val" class="text-stone-800">0</span></label>
                     <input type="range" id="y-offset-slider" min="-1200" max="1200" step="1" value="0">
                 </div>
-                <div class="space-y-3">
-                    <label class="text-[11px] font-black text-stone-800 flex justify-between uppercase tracking-widest"><span>누름 강도 (Strength)</span><span id="strength-val" class="font-mono text-rose-500">1.0x</span></label>
+                <div class="space-y-4">
+                    <label class="text-[11px] font-black text-stone-800 flex justify-between px-1 uppercase tracking-widest italic"><span>누름 강도 (SFX Power)</span><span id="strength-val" class="text-rose-500">1.0x</span></label>
                     <input type="range" id="strength-slider" min="0.2" max="3.0" step="0.1" value="1.0">
                 </div>
             </div>
-            <button onclick="resetImage()" class="w-full mt-8 py-3 bg-stone-50 text-stone-400 font-bold rounded-xl text-[11px] uppercase tracking-widest">Reset All</button>
-            <button onclick="toggleSidebar()" class="w-full mt-3 py-3 bg-stone-800 text-white font-bold rounded-xl text-[11px] uppercase tracking-widest">Confirm</button>
+            <button onclick="resetImage()" class="w-full mt-10 py-4 bg-stone-50 text-stone-400 font-bold rounded-2xl text-[11px] uppercase tracking-widest">Reset Settings</button>
+            <button onclick="toggleSidebar()" class="w-full mt-3 py-4 bg-stone-800 text-white font-bold rounded-2xl text-[11px] uppercase tracking-widest">Confirm</button>
         </div>
     </div>
 
@@ -182,68 +213,130 @@
         const zoomSlider = document.getElementById('zoom-slider');
         const yOffsetSlider = document.getElementById('y-offset-slider');
         const strengthSlider = document.getElementById('strength-slider');
+        const bgmInfo = document.getElementById('bgm-info-pill');
 
         let width, height, ballSize, dollAspect = 1;
-        let squishCount = 0, isMuted = false, userImg = null;
-        let userZoom = 1.0, imgYOffset = 0, squishStrength = 1.0, isPopped = false; 
+        let squishCount = 0, isMuted = false, isMusicActive = false, currentTrackIdx = 0;
+        let userZoom = 1.0, imgYOffset = 0, squishStrength = 1.0, userImg = null, isPopped = false; 
 
         const meshRes = 18; 
         let mesh = [], cottonParticles = [], activeTouches = new Map();
-        const apiKey = ""; 
         const moodSteps = ['😩','😟','😐','🙂','😊','🥰','🤩'];
 
         const catharticMessages = [
             "인생 참 엿같다, 그치?", "그 인간 면상이라 생각하고 꽉 눌러!", "지랄도 풍년이라더니 오늘이 딱이네.", "퇴사가 답인가...", "오늘 너 건드린 놈, 탈모 와라!",
             "다 때려치우고 싶다 진짜...", "아무것도 안 하고 싶다.", "세상은 넓고 미친놈은 더 많다.", "시X... 소리가 절로 나오네.", "적게 일하고 많이 벌게 해주세요.", 
-            "돈 많은 백수가 꿈입니다.", "인간관계? 다 부질없다 주물러버려!", "웃어주니까 가마니로 보이나?", "참는 자에게 병이 온다.", "빡치면 팍팍 눌러, 내가 다 받아줄게.",
-            "오늘도 무사히 넘겼네. 대단해.", "말 같지 않은 말은 씹는 게 상책.", "야근 시키는 놈 다 지옥 가라.", "인생 짧아, 화내지 말고 주물러.", "지갑도 텅, 마음도 텅."
+            "돈 많은 백수가 꿈입니다.", "인간관계? 다 부질없다 주물러버려!", "웃어주니까 가마니로 보이나?", "참는 자에게 병이 온다.", "빡치면 팍팍 눌러, 내가 다 받아줄게."
         ];
 
-        function startApp() { initAudio(); intro.classList.add('hidden'); }
-
+        // --- 닌텐도 스타일 8비트 사운드 엔진 ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
+        let nextNoteTime = 0;
+        let noteIndex = 0;
+
+        const tracks = [
+            { name: "Sunshine Town", tempo: 0.18, melody: [523, 659, 783, 1046, 783, 659, 880, 0, 987, 880, 783, 659, 523, 587, 523, 0] },
+            { name: "Pallet Path", tempo: 0.22, melody: [392, 523, 659, 523, 440, 587, 783, 587, 523, 0, 392, 523, 493, 392, 349, 0] },
+            { name: "Mario's Nap", tempo: 0.35, melody: [523, 0, 659, 0, 783, 0, 1046, 0, 987, 880, 783, 0, 698, 659, 587, 0] },
+            { name: "Jelly Garden", tempo: 0.2, melody: [659, 783, 523, 659, 440, 523, 392, 0, 659, 783, 880, 1046, 783, 0, 523, 0] },
+            { name: "Pocket Meadow", tempo: 0.25, melody: [349, 440, 523, 698, 659, 523, 440, 0, 392, 523, 659, 783, 698, 587, 523, 0] },
+            { name: "Bouncy Hill", tempo: 0.15, melody: [523, 523, 659, 523, 783, 783, 1046, 783, 880, 880, 1046, 880, 783, 0, 659, 0] },
+            { name: "Star Night", tempo: 0.5, melody: [783, 987, 1174, 987, 880, 1046, 1318, 1046, 783, 0] },
+            { name: "Cloud Hop", tempo: 0.2, melody: [523, 0, 523, 659, 0, 659, 783, 880, 783, 0, 659, 587, 523, 0] },
+            { name: "Deep Sea", tempo: 0.6, melody: [261, 329, 392, 440, 523, 440, 392, 329] },
+            { name: "Victory Road", tempo: 0.12, melody: [523, 659, 783, 523, 659, 783, 1046, 0, 880, 0, 783, 0, 659, 587, 523, 0] },
+            { name: "Daisy Field", tempo: 0.28, melody: [392, 440, 493, 523, 587, 659, 587, 523, 493, 440, 392, 0] },
+            { name: "Quiet Village", tempo: 0.45, melody: [523, 440, 392, 349, 329, 293, 261, 0] },
+            { name: "Airship", tempo: 0.18, melody: [261, 311, 349, 392, 349, 311, 261, 233, 261, 0] },
+            { name: "Lava Lake", tempo: 0.3, melody: [196, 261, 311, 392, 311, 261, 196, 0] },
+            { name: "Castle Joy", tempo: 0.2, melody: [523, 659, 783, 523, 698, 880, 1046, 698, 523, 0] },
+            { name: "Forest Run", tempo: 0.16, melody: [440, 523, 587, 659, 783, 880, 783, 659, 587, 523, 440, 0] },
+            { name: "Neon Disco", tempo: 0.14, melody: [392, 0, 392, 523, 0, 523, 587, 0, 587, 659, 0, 523] },
+            { name: "Snowy Peak", tempo: 0.4, melody: [523, 659, 783, 1046, 987, 880, 783, 0, 523, 0] },
+            { name: "Retro Wave", tempo: 0.2, melody: [261, 392, 523, 659, 523, 392, 261, 0] },
+            { name: "Good Night", tempo: 0.8, melody: [523, 659, 392, 440, 349, 261] }
+        ];
+
         function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); if (audioCtx.state === 'suspended') audioCtx.resume(); }
 
-        function playCheerfulRustle() {
+        function playBgm() {
+            if (!isMusicActive || audioCtx.state === 'suspended') return;
+            const now = audioCtx.currentTime;
+            const track = tracks[currentTrackIdx];
+            if (now > nextNoteTime) {
+                const freq = track.melody[noteIndex % track.melody.length];
+                if (freq > 0) {
+                    const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+                    osc.type = (currentTrackIdx % 3 === 0) ? 'square' : (currentTrackIdx % 2 === 0 ? 'triangle' : 'sine');
+                    osc.frequency.setValueAtTime(freq, now);
+                    g.gain.setValueAtTime(0.012, now); g.gain.exponentialRampToValueAtTime(0.001, now + track.tempo * 0.9);
+                    osc.connect(g); g.connect(audioCtx.destination);
+                    osc.start(now); osc.stop(now + track.tempo * 0.9);
+                }
+                noteIndex++; nextNoteTime = now + track.tempo;
+            }
+            requestAnimationFrame(playBgm);
+        }
+
+        // 효과음 (SFX) - 쫀득한 바스락 소리
+        function playAsmrSquish() {
             if (isMuted || !audioCtx) return;
             const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            osc.type = 'sine'; osc.frequency.setValueAtTime(1100 + Math.random() * 400, now);
-            osc.frequency.exponentialRampToValueAtTime(350, now + 0.1);
-            g.gain.setValueAtTime(0.04 + (squishStrength * 0.02), now); 
-            g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-            osc.connect(g); g.connect(audioCtx.destination); osc.start(); osc.stop(now + 0.1);
-        }
+            
+            // 1. 묵직한 베이스 (타격감)
+            const thud = audioCtx.createOscillator(); const g1 = audioCtx.createGain();
+            thud.type = 'sine'; thud.frequency.setValueAtTime(120 + Math.random()*50, now);
+            thud.frequency.exponentialRampToValueAtTime(30, now + 0.15);
+            g1.gain.setValueAtTime(0.05 * squishStrength, now); g1.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            thud.connect(g1); g1.connect(audioCtx.destination); thud.start(); thud.stop(now + 0.15);
 
-        function playPopSound() {
-            if (isMuted || !audioCtx) return;
-            const now = audioCtx.currentTime; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'sine'; osc.frequency.setValueAtTime(180, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.5);
-            gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(now + 0.5);
-        }
-
-        class Cotton {
-            constructor(x, y) {
-                this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * 16; this.vy = (Math.random() - 1.1) * 20;
-                this.size = Math.random() * 15 + 20; this.alpha = 1.0; this.angle = Math.random() * Math.PI * 2; this.rot = (Math.random() - 0.5) * 0.1;
-            }
-            update() { this.x += this.vx; this.y += this.vy; this.vy += 0.4; this.vx *= 0.97; this.vy *= 0.97; this.alpha -= 0.006; }
-            draw() {
-                ctx.save(); ctx.globalAlpha = Math.max(0, this.alpha); ctx.translate(this.x, this.y); ctx.rotate(this.angle); ctx.fillStyle = 'white';
-                for(let i=0; i<3; i++) { const ox = Math.cos(i*2.1)*(this.size/2.5); const oy = Math.sin(i*2.1)*(this.size/2.5); ctx.beginPath(); ctx.arc(ox, oy, this.size/2, 0, Math.PI*2); ctx.fill(); }
-                ctx.restore();
+            // 2. 바스락거리는 노이즈
+            const grainCount = 3 + Math.floor(Math.random() * 3);
+            for(let i=0; i<grainCount; i++) {
+                const dur = 0.02 + Math.random() * 0.03;
+                const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for(let k=0; k<data.length; k++) data[k] = Math.random() * 2 - 1;
+                const src = audioCtx.createBufferSource(); src.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.setValueAtTime(3000 + Math.random()*2000, now);
+                const g2 = audioCtx.createGain(); g2.gain.setValueAtTime(0.015 * squishStrength, now); g2.gain.exponentialRampToValueAtTime(0.001, now + dur);
+                src.connect(filter); filter.connect(g2); g2.connect(audioCtx.destination); src.start();
             }
         }
 
-        function triggerPop() {
-            isPopped = true; playPopSound(); const cx = width / 2, cy = height / 2;
-            for(let i=0; i<50; i++) cottonParticles.push(new Cotton(cx, cy));
-            updateMessage("앗! 치료가 필요해요! 금방 고쳐줄게요 ✨", true);
-            setTimeout(() => { isPopped = false; squishCount = 0; counterEl.innerText = "0"; emojiEl.innerText = moodSteps[0]; updateMessage("다시 주물러보세요!", true); }, 4000);
+        function startApp() { 
+            initAudio(); intro.classList.add('hidden'); 
+            isMusicActive = true; document.getElementById('music-btn').classList.add('active-red');
+            playBgm(); showBgmStatus();
         }
 
+        function changeTrack() {
+            initAudio();
+            if (!isMusicActive) {
+                isMusicActive = true; document.getElementById('music-btn').classList.add('active-red');
+                playBgm();
+            } else {
+                currentTrackIdx = (currentTrackIdx + 1) % tracks.length;
+                noteIndex = 0;
+            }
+            showBgmStatus();
+        }
+
+        function showBgmStatus() {
+            bgmInfo.innerText = `Track ${currentTrackIdx + 1}: ${tracks[currentTrackIdx].name}`;
+            bgmInfo.style.opacity = "1";
+            setTimeout(() => { if (bgmInfo.innerText.includes(`${currentTrackIdx + 1}`)) bgmInfo.style.opacity = "0"; }, 2500);
+        }
+
+        function toggleMute() { 
+            isMuted = !isMuted; 
+            document.getElementById('sound-icon-svg-box').innerHTML = isMuted 
+            ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>' 
+            : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>'; 
+        }
+
+        // --- 인터랙션 및 물리 ---
         function triggerFileInput() { fileInput.click(); }
         function handleImage(e) { 
             const file = e.target.files[0]; 
@@ -262,15 +355,15 @@
             
             const dx = Math.abs(x - width / 2);
             const dy = Math.abs(y - (height / 2 + imgYOffset));
-            const hitW = ballSize * 0.5;
-            const hitH = (ballSize * 0.5) / dollAspect;
+            const hitW = ballSize * 0.55;
+            const hitH = (ballSize * 0.55) / dollAspect;
 
             if (dx < hitW && dy < hitH) {
                 squishCount++; counterEl.innerText = squishCount.toLocaleString();
                 const stepIdx = Math.min(Math.floor(squishCount / 14.3), 6);
                 if (emojiEl.innerText !== moodSteps[stepIdx]) { emojiEl.innerText = moodSteps[stepIdx]; emojiEl.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 250 }); }
                 if (squishCount >= 100) triggerPop();
-                else { playCheerfulRustle(); updateMessage(); }
+                else { playAsmrSquish(); if(squishCount % 15 === 0) updateMessage(); }
             }
         };
 
@@ -278,21 +371,15 @@
         const handleInteractionEnd = (id) => activeTouches.delete(id);
 
         canvas.addEventListener('mousedown', (e) => handleInteractionStart('mouse', e.clientX, e.clientY));
-        window.addEventListener('mousemove', (e) => handleInteractionMove('mouse', e.clientX, e.clientY));
-        window.addEventListener('mouseup', () => handleInteractionEnd('mouse'));
-        canvas.addEventListener('touchstart', (e) => { 
-            if (e.cancelable) e.preventDefault(); 
-            const t = e.changedTouches[0];
-            if (!userImg) { triggerFileInput(); return; }
-            for (let i = 0; i < e.changedTouches.length; i++) handleInteractionStart(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); 
-        }, { passive: false });
-        window.addEventListener('touchmove', (e) => { for (let i = 0; i < e.changedTouches.length; i++) handleInteractionMove(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); }, { passive: true });
-        window.addEventListener('touchend', (e) => { for (let i = 0; i < e.changedTouches.length; i++) handleInteractionEnd(e.changedTouches[i].identifier); });
+        window.addEventListener('mousemove', (e) => { if (activeTouches.has('mouse')) activeTouches.set('mouse', { x: e.clientX, y: e.clientY }); });
+        window.addEventListener('mouseup', () => activeTouches.delete('mouse'));
+        canvas.addEventListener('touchstart', (e) => { if (e.cancelable) e.preventDefault(); const t = e.changedTouches[0]; if (!userImg) { triggerFileInput(); return; } for (let i = 0; i < e.changedTouches.length; i++) handleInteractionStart(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); }, { passive: false });
+        window.addEventListener('touchmove', (e) => { for (let i = 0; i < e.changedTouches.length; i++) { const t = e.changedTouches[i]; if (activeTouches.has(t.identifier)) activeTouches.set(t.identifier, { x: t.clientX, y: t.clientY }); } }, { passive: true });
+        window.addEventListener('touchend', (e) => { for (let i = 0; i < e.changedTouches.length; i++) activeTouches.delete(e.changedTouches[i].identifier); });
 
-        let lastIdx = -1;
         function updateMessage(forceTxt) {
-            let nextIdx; do { nextIdx = Math.floor(Math.random() * catharticMessages.length); } while (nextIdx === lastIdx);
-            lastIdx = nextIdx; messageEl.classList.remove('show');
+            const nextIdx = Math.floor(Math.random() * catharticMessages.length);
+            messageEl.classList.remove('show');
             setTimeout(() => {
                 const displayTxt = forceTxt || catharticMessages[nextIdx];
                 messageEl.children[0].innerText = displayTxt; messageEl.classList.add('show');
@@ -305,18 +392,12 @@
             canvas.width = width * devicePixelRatio; canvas.height = height * devicePixelRatio; 
             canvas.style.width = width+'px'; canvas.style.height = height+'px'; 
             ctx.scale(devicePixelRatio, devicePixelRatio); 
-            
             if (userImg) {
                 dollAspect = userImg.width / userImg.height;
                 const viewAspect = width / height;
-                if (dollAspect > viewAspect) {
-                    ballSize = width * 0.95 * userZoom;
-                } else {
-                    ballSize = height * 0.85 * dollAspect * userZoom;
-                }
-            } else {
-                ballSize = Math.min(width, height) * 0.7;
-            }
+                if (dollAspect > viewAspect) ballSize = width * 0.95 * userZoom;
+                else ballSize = height * 0.82 * dollAspect * userZoom;
+            } else { ballSize = Math.min(width, height) * 0.7; }
             initMesh();
         }
         function initMesh() { mesh = []; for (let r = 0; r <= meshRes; r++) for (let c = 0; c <= meshRes; c++) mesh.push({ ox: c/meshRes-0.5, oy: r/meshRes-0.5, cx: c/meshRes-0.5, cy: r/meshRes-0.5, vx: 0, vy: 0 }); }
@@ -358,13 +439,13 @@
                         drawTriangle(userImg, cx + p1.cx*s, cy + p1.cy*(s/dollAspect), cx + p3.cx*s, cy + p3.cy*(s/dollAspect), cx + p2.cx*s, cy + p2.cy*(s/dollAspect), getSX(p1), getSY(p1), getSX(p3), getSY(p3), getSX(p2), getSY(p2)); 
                     } 
                 }
-                activeTouches.forEach(pos => { const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, ballSize*0.15 * squishStrength); g.addColorStop(0, 'rgba(255,255,255,0.08)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fill(); });
+                activeTouches.forEach(pos => { const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, ballSize*0.12 * squishStrength); g.addColorStop(0, 'rgba(255,255,255,0.1)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fill(); });
             } else if (!userImg && !isPopped) { 
                 ctx.beginPath(); ctx.arc(width/2, height/2, ballSize/4, 0, Math.PI*2); ctx.fillStyle = 'white'; ctx.fill(); 
                 ctx.strokeStyle = '#DDD'; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.fillStyle = '#AAA'; ctx.font = 'bold 13px Pretendard'; ctx.textAlign = 'center'; 
                 ctx.fillText('인형을 올려주세요', width/2, height/2 + 5); 
             }
-            cottonParticles.forEach(c => c.draw()); requestAnimationFrame(render);
+            requestAnimationFrame(render);
         }
         render();
 
@@ -373,28 +454,6 @@
         yOffsetSlider.oninput = (e) => { imgYOffset = parseInt(e.target.value); document.getElementById('offset-val').innerText = imgYOffset; };
         strengthSlider.oninput = (e) => { squishStrength = parseFloat(e.target.value); document.getElementById('strength-val').innerText = squishStrength.toFixed(1) + "x"; };
         function resetImage() { userZoom = 1.0; imgYOffset = 0; squishStrength = 1.0; zoomSlider.value = 1.0; yOffsetSlider.value = 0; strengthSlider.value = 1.0; document.getElementById('zoom-val').innerText = "1.0x"; document.getElementById('offset-val').innerText = "0"; document.getElementById('strength-val').innerText = "1.0x"; resize(); }
-        function toggleMute() { isMuted = !isMuted; document.getElementById('sound-icon-svg').innerHTML = isMuted ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>'; };
-        
-        function openAI() { initAudio(); aiModal.classList.add('active'); aiInput.focus(); }
-        function closeAI() { aiModal.classList.remove('active'); }
-        async function getAIHealing() {
-            const input = aiInput.value.trim(); if (!input) return; aiSubmit.disabled = true; aiSubmit.innerHTML = '<span class="loader"></span>';
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const payload = { contents: [{ parts: [{ text: `고민: "${input}"` }] }], systemInstruction: { parts: [{ text: "당신은 아주 솔직하고 사이다 같은 위로를 건네는 인형 친구입니다. 가끔은 같이 욕도 해주고 속 시원한 한두 문장만 말해주세요." }] } };
-            let text = "괜찮아요, 제가 곁에 있을게요.";
-            try { const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }); const json = await res.json(); text = json.candidates?.[0]?.content?.parts?.[0]?.text || text; } catch(e){}
-            aiSubmit.disabled = false; aiSubmit.innerHTML = 'Get Comfort'; aiInput.value = ''; closeAI(); updateMessage(text);
-        }
-
-        let mediaRecorder, chunks = [];
-        function toggleRecording() { 
-            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-                chunks = []; const stream = canvas.captureStream(30); mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-                mediaRecorder.ondataavailable = e => chunks.push(e.data);
-                mediaRecorder.onstop = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(chunks, { type: 'video/webm' })); a.download = `relax-${Date.now()}.webm`; a.click(); };
-                mediaRecorder.start(); document.body.classList.add('is-recording'); updateMessage("녹화 중...", true);
-            } else { mediaRecorder.stop(); document.body.classList.remove('is-recording'); updateMessage("저장 완료!", true); }
-        }
     </script>
 </body>
 </html>
