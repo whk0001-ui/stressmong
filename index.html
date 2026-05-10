@@ -53,14 +53,29 @@
 
         canvas { touch-action: none; cursor: pointer; display: block; outline: none; }
 
-        /* 메시지 칩 - 위치 대폭 하향 조정 (가려짐 방지) */
+        /* 메시지 칩 - 한 줄 강제 표시 및 위치 조정 */
         #comfort-message {
-            position: fixed; top: calc(env(safe-area-inset-top) + 70px); left: 50%; transform: translateX(-50%);
+            position: fixed; top: calc(env(safe-area-inset-top) + 75px); left: 50%; transform: translateX(-50%);
             z-index: 50; pointer-events: none;
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            opacity: 0; width: auto; max-width: 90vw;
+            opacity: 0; width: 100%; display: flex; justify-content: center;
         }
         #comfort-message.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .message-pill {
+            font-bold; color: #e11d48; /* rose-600 */
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 10px 24px;
+            border-radius: 100px;
+            border: 1px solid rgba(225, 29, 72, 0.1);
+            shadow-md;
+            white-space: nowrap; /* 한 줄 강제 */
+            font-size: 13px;
+            max-width: 85vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
 
         .action-dock {
             position: fixed; top: calc(env(safe-area-inset-top) + 12px); right: 12px; z-index: 100;
@@ -112,10 +127,10 @@
         }
         
         input[type=range] { appearance: none; background: rgba(0,0,0,0.06); height: 4px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; background: #3d3935; border-radius: 50%; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: #3d3935; border-radius: 50%; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
         @media (orientation: landscape) {
-            #comfort-message { top: 20px; }
+            #comfort-message { top: 15px; }
             .action-dock { top: auto; bottom: 12px; right: 12px; }
             .status-pill { bottom: 12px; left: 12px; }
             .sidebar-panel { left: auto; right: 0; top: 0; bottom: 0; transform: translateX(105%); width: 300px; }
@@ -137,7 +152,7 @@
     </div>
 
     <div id="comfort-message">
-        <div class="font-bold text-rose-600 bg-white/90 backdrop-blur-lg py-2.5 px-8 rounded-full border border-rose-100 shadow-md inline-block text-xs md:text-sm text-center">
+        <div class="message-pill font-bold">
             인형을 주물러 보세요...
         </div>
     </div>
@@ -220,7 +235,6 @@
         const apiKey = ""; 
         const moodSteps = ['😩','😟','😐','🙂','😊','🥰','🤩'];
 
-        // --- 100가지 매운맛 사이다 문구 ---
         const catharticMessages = [
             "인생 참 엿같다, 그치?", "그 인간 면상이라 생각하고 꽉 눌러!", "지랄도 풍년이라더니 오늘이 딱이네.", "퇴사가 답인가...", "오늘 너 건드린 놈, 대대손손 탈모 와라!",
             "다 때려치우고 싶다 진짜...", "아무것도 안 하고 싶다. 이미 안 하고 있지만...", "내 통장은 왜 스쳐 지나가는 통로일 뿐인가.", "세상은 넓고 미친놈은 더 많다.", "부장놈 얼굴 여기다 합성하고 싶지?",
@@ -309,8 +323,8 @@
         function triggerPop() {
             isPopped = true; playPopSound(); const cx = width / 2; const cy = height / 2;
             for(let i=0; i<50; i++) cottonParticles.push(new Cotton(cx, cy));
-            updateMessage("앗! 치료가 필요해요! 금방 고쳐줄게요 ✨", true);
-            setTimeout(() => { isPopped = false; squishCount = 0; counterEl.innerText = "0"; emojiEl.innerText = moodSteps[0]; updateMessage("다시 주물러보세요!", true); }, 4000);
+            updateMessage("앗! 치료가 필요해요! 금방 고쳐줄게요 ✨");
+            setTimeout(() => { isPopped = false; squishCount = 0; counterEl.innerText = "0"; emojiEl.innerText = moodSteps[0]; updateMessage("다시 주물러보세요!"); }, 4000);
         }
 
         function checkInDoll(x, y) {
@@ -339,7 +353,7 @@
                 const stepIdx = Math.min(Math.floor(squishCount / 14.3), 6);
                 if (emojiEl.innerText !== moodSteps[stepIdx]) { emojiEl.innerText = moodSteps[stepIdx]; emojiEl.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 250 }); }
                 if (squishCount >= 100) triggerPop();
-                else { playCheerfulRustle(); updateMessage(); } // 누를 때마다 메시지 변경
+                else { playCheerfulRustle(); updateMessage(); }
             }
         };
 
@@ -349,14 +363,27 @@
         canvas.addEventListener('mousedown', (e) => handleInteractionStart('mouse', e.clientX, e.clientY));
         window.addEventListener('mousemove', (e) => handleInteractionMove('mouse', e.clientX, e.clientY));
         window.addEventListener('mouseup', () => handleInteractionEnd('mouse'));
-        canvas.addEventListener('click', (e) => { if (!userImg && checkInDoll(e.clientX, e.clientY)) triggerFileInput(); });
-        canvas.addEventListener('touchstart', (e) => { if (e.cancelable) e.preventDefault(); for (let i = 0; i < e.changedTouches.length; i++) handleInteractionStart(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); }, { passive: false });
+        // 캔버스 클릭 시 사진 업로드 보강
+        canvas.addEventListener('click', (e) => { 
+            if (!userImg && checkInDoll(e.clientX, e.clientY)) {
+                triggerFileInput();
+            }
+        });
+        canvas.addEventListener('touchstart', (e) => { 
+            if (e.cancelable) e.preventDefault(); 
+            // 모바일 터치 시 사진 없을 때 즉시 파일 선택창 트리거
+            const t = e.changedTouches[0];
+            if (!userImg && checkInDoll(t.clientX, t.clientY)) {
+                triggerFileInput();
+                return;
+            }
+            for (let i = 0; i < e.changedTouches.length; i++) handleInteractionStart(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); 
+        }, { passive: false });
         window.addEventListener('touchmove', (e) => { for (let i = 0; i < e.changedTouches.length; i++) handleInteractionMove(e.changedTouches[i].identifier, e.changedTouches[i].clientX, e.changedTouches[i].clientY); }, { passive: true });
         window.addEventListener('touchend', (e) => { for (let i = 0; i < e.changedTouches.length; i++) handleInteractionEnd(e.changedTouches[i].identifier); });
 
-        // --- 사이다 메시지 업데이트 로직 ---
         let lastIdx = -1;
-        function updateMessage(forceTxt, isLong = false) {
+        function updateMessage(forceTxt) {
             let nextIdx;
             do { nextIdx = Math.floor(Math.random() * catharticMessages.length); } while (nextIdx === lastIdx);
             lastIdx = nextIdx;
@@ -366,7 +393,6 @@
                 const displayTxt = forceTxt || catharticMessages[nextIdx];
                 messageEl.children[0].innerText = displayTxt;
                 messageEl.classList.add('show');
-                // 강제 텍스트가 아니면 3초 후 사라짐
                 if (!forceTxt) {
                     setTimeout(() => { if (messageEl.children[0].innerText === displayTxt) messageEl.classList.remove('show'); }, 3000);
                 }
@@ -378,7 +404,7 @@
             canvas.width = width * devicePixelRatio; canvas.height = height * devicePixelRatio; 
             canvas.style.width = width+'px'; canvas.style.height = height+'px'; 
             ctx.scale(devicePixelRatio, devicePixelRatio); 
-            if (width > height) ballSize = height * 0.92; else ballSize = width * 0.90;
+            if (width > height) ballSize = height * 0.95; else ballSize = width * 0.92;
             initMesh();
         }
         function initMesh() {
@@ -431,8 +457,8 @@
                 chunks = []; const stream = canvas.captureStream(30); mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
                 mediaRecorder.ondataavailable = e => chunks.push(e.data);
                 mediaRecorder.onstop = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(chunks, { type: 'video/webm' })); a.download = `relax-${Date.now()}.webm`; a.click(); };
-                mediaRecorder.start(); document.body.classList.add('is-recording'); updateMessage("녹화 중...", true);
-            } else { mediaRecorder.stop(); document.body.classList.remove('is-recording'); updateMessage("저장 완료!", true); }
+                mediaRecorder.start(); document.body.classList.add('is-recording'); updateMessage("녹화 중...");
+            } else { mediaRecorder.stop(); document.body.classList.remove('is-recording'); updateMessage("저장 완료!"); }
         }
 
         function openAI() { initAudio(); aiModal.classList.add('active'); aiInput.focus(); }
@@ -443,14 +469,14 @@
             const payload = { contents: [{ parts: [{ text: `고민: "${input}"` }] }], systemInstruction: { parts: [{ text: "당신은 아주 솔직하고 사이다 같은 위로를 건네는 인형 친구입니다. 가끔은 같이 욕도 해주고 속 시원한 한두 문장만 말해주세요." }] } };
             let text = "괜찮아요, 제가 곁에 있을게요.";
             try { const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }); const json = await res.json(); text = json.candidates?.[0]?.content?.parts?.[0]?.text || text; } catch(e){}
-            aiSubmit.disabled = false; aiSubmit.innerHTML = '위로 받기'; aiInput.value = ''; closeAI(); updateMessage(text, true);
+            aiSubmit.disabled = false; aiSubmit.innerHTML = '위로 받기'; aiInput.value = ''; closeAI(); updateMessage(text);
             if (!isMuted) {
                 const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
                 const ttsP = { contents: [{ parts: [{ text: `Say warmly: ${text}` }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } }, model: "gemini-2.5-flash-preview-tts" };
                 try { const r = await fetch(ttsUrl, { method:'POST', body: JSON.stringify(ttsP)}); const j = await r.json(); new Audio(URL.createObjectURL(pcmToWav(j.candidates[0].content.parts[0].inlineData.data, 24000))).play(); } catch(e){}
             }
         }
-        function pcmToWav(b64, rate) { const bin = atob(b64), len = bin.length, bytes = new Int16Array(len/2); for (let i = 0; i < len / 2; i++) bytes[i] = (bin.charCodeAt(i * 2) | (bin.charCodeAt(i * 2 + 1) << 8)); const buf = new ArrayBuffer(44 + bytes.length * 2), view = new DataView(buf); const write = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); }; write(0,'RIFF'); view.setUint32(4, 36 + bytes.length * 2, true); write(8, 'WAVE'); write(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, rate, true); view.setUint32(28, rate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); write(36, 'data'); view.setUint32(40, bytes.length * 2, true); for (let i = 0; i < bytes.length; i++) view.setInt16(44 + i * 2, bytes[i], true); return new Blob([buf], {type:'audio/wav'}); }
+        function pcmToWav(b64, rate) { const bin = atob(b64), len = bin.length, bytes = new Int16Array(len / 2); for (let i = 0; i < len / 2; i++) bytes[i] = (bin.charCodeAt(i * 2) | (bin.charCodeAt(i * 2 + 1) << 8)); const buf = new ArrayBuffer(44 + bytes.length * 2), view = new DataView(buf); const write = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); }; write(0,'RIFF'); view.setUint32(4, 36 + bytes.length * 2, true); write(8, 'WAVE'); write(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, rate, true); view.setUint32(28, rate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); write(36, 'data'); view.setUint32(40, bytes.length * 2, true); for (let i = 0; i < bytes.length; i++) view.setInt16(44 + i * 2, bytes[i], true); return new Blob([buf], {type:'audio/wav'}); }
     </script>
 </body>
 </html>
