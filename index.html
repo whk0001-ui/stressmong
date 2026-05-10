@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pure Relax V3 - Full Frame Edition</title>
+    <title>Pure Relax V3 - Full Height Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;900&display=swap');
@@ -39,6 +39,7 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.05);
             animation: float 4s ease-in-out infinite;
             display: flex; align-items: center; justify-content: center;
+            position: relative;
         }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
@@ -51,7 +52,7 @@
 
         canvas { touch-action: none; cursor: pointer; display: block; outline: none; }
 
-        /* 메시지 칩 - 상단 배치 */
+        /* 메시지 칩 - 인형 위로 덮이게 배치 */
         #comfort-message {
             position: fixed; top: calc(env(safe-area-inset-top) + 80px); left: 50%; transform: translateX(-50%);
             z-index: 50; pointer-events: none;
@@ -61,28 +62,29 @@
         #comfort-message.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .message-pill {
             font-weight: 700; color: #e11d48;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 12px 28px; border-radius: 100px;
-            border: 1px solid rgba(225, 29, 72, 0.15);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 10px 24px; border-radius: 100px;
+            border: 1px solid rgba(225, 29, 72, 0.1);
             white-space: nowrap; font-size: 13px; max-width: 90vw;
             overflow: hidden; text-overflow: ellipsis;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        /* 액션 컨트롤 도크 */
+        /* 액션 컨트롤 도크 - 더 작고 투명하게 */
         .action-dock {
             position: fixed; top: calc(env(safe-area-inset-top) + 12px); right: 12px; z-index: 100;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 16px; padding: 3px;
-            display: flex; flex-direction: row; gap: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 14px; padding: 2px;
+            display: flex; flex-direction: row; gap: 1px;
         }
 
         .btn-action {
             width: 32px; height: 32px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; background: transparent; color: #666;
+            border-radius: 10px; background: transparent; color: #777;
             transition: all 0.2s; position: relative;
         }
         .btn-action svg { width: 14px; height: 14px; }
@@ -93,15 +95,14 @@
             animation: pulse 1s infinite;
         }
         .is-recording .recording-dot { display: block; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
         /* 상태바 */
         .status-pill {
             position: fixed; bottom: calc(env(safe-area-inset-bottom) + 15px); left: 15px;
-            background: rgba(45, 42, 38, 0.85);
+            background: rgba(45, 42, 38, 0.8);
             backdrop-filter: blur(15px);
             padding: 4px 18px; border-radius: 100px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             display: flex; align-items: center; gap: 12px; color: white;
             z-index: 100; pointer-events: none;
         }
@@ -117,24 +118,20 @@
         .sidebar-panel.active { transform: translateY(0); }
         .sidebar-content {
             background: white; width: 100%; max-width: 450px;
-            border-radius: 2.5rem 2.5rem 0 0; padding: 2.2rem;
-            box-shadow: 0 -15px 50px rgba(0,0,0,0.1);
+            border-radius: 2.5rem 2.5rem 0 0; padding: 2rem;
         }
         
-        @media (orientation: landscape) {
-            #comfort-message { top: 15px; }
-            .action-dock { top: auto; bottom: 15px; right: 15px; }
-            .status-pill { bottom: 15px; left: 15px; }
-            .sidebar-panel { left: auto; right: 0; top: 0; bottom: 0; transform: translateX(105%); width: 320px; }
-            .sidebar-panel.active { transform: translateX(0); }
-            .sidebar-content { border-radius: 2.5rem 0 0 2.5rem; height: 100%; }
-        }
-
         input[type=range] { appearance: none; background: rgba(0,0,0,0.06); height: 4px; border-radius: 10px; width: 100%; }
         input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; background: #3d3935; border-radius: 50%; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
         .ai-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; }
         .ai-modal.active { display: flex; }
+
+        @media (orientation: landscape) {
+            #comfort-message { top: 15px; }
+            .action-dock { top: auto; bottom: 12px; right: 12px; }
+            .status-pill { bottom: 12px; left: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -147,7 +144,7 @@
         <button class="btn-start shadow-xl" onclick="startApp()">시작하기</button>
     </div>
 
-    <!-- [2] 힐링 메시지 -->
+    <!-- [2] 힐링 메시지 (인형 위로 덮임) -->
     <div id="comfort-message">
         <div class="message-pill font-bold">
             인형을 주물러 보세요...
@@ -251,8 +248,8 @@
             "인생 참 엿같다, 그치?", "그 인간 면상이라 생각하고 꽉 눌러!", "지랄도 풍년이라더니 오늘이 딱이네.", "퇴사가 답인가...", "오늘 너 건드린 놈, 대대손손 탈모 와라!",
             "다 때려치우고 싶다 진짜...", "아무것도 안 하고 싶다. 이미 안 하고 있지만...", "내 통장은 왜 스쳐 지나가는 통로일 뿐인가.", "세상은 넓고 미친놈은 더 많다.", "부장놈 얼굴 여기다 합성하고 싶지?",
             "시X... 소리가 절로 나오네.", "적게 일하고 많이 벌게 해주세요 제발.", "오늘 하루 진짜 고생했어, 이 개 같은 세상에서.", "돈 많은 백수가 꿈입니다.", "인간관계? 다 부질없다 주물러버려!",
-            "내일 지구가 멸망했으면 좋겠어.", "월요일이 오지 않게 해주세요.", "개소리를 정성스럽게 하네 그 인간은.", "웃어주니까 가마니로 보이나?", "법만 없었으면 진짜...",
-            "참는 자에게 복이 오는 게 아니라 병이 온다.", "빡치면 팍팍 눌러, 내가 다 받아줄게.", "오늘 너 건드린 사람, 발가락 문지방에 찧어라!",
+            "내일 지구가 멸망했으면 좋겠어.", "월요일이 오지 않게 해주세요.", "개소리를 정성스럽게 하네 그 인간은.", "웃어주니까 가마니로 보인가?", "법만 없었으면 진짜...",
+            "복수하고 싶다... 성공으로!", "참는 자에게 복이 오는 게 아니라 병이 온다.", "빡치면 팍팍 눌러, 내가 다 받아줄게.", "인생은 멀리서 보면 희극, 가까이서 보면 비극, 난 지금 지옥.", "오늘 너 건드린 사람, 발가락 문지방에 찧어라!",
             "아... 진짜 욕나오게 하네.", "내가 뭘 그렇게 잘못했다고!", "운전 똑바로 안 하냐 이 멍청아!", "당신의 빡침을 응원합니다.",
             "지랄병은 약도 없다더라.", "말이야 방구야?", "왜 나한테만 그래 진짜!", "지갑도 텅, 마음도 텅.",
             "야! 소리 한번 크게 지르고 싶지?", "인생은 실전이야 꼬마야...", "돈이 최고다 역시.", "당신의 분노는 정당합니다.",
@@ -329,10 +326,12 @@
         }
 
         function checkInDoll(x, y) {
-            const dx = x - width / 2;
-            const dy = y - (height / 2 + imgYOffset * (ballSize/800));
-            // 판정 범위를 넉넉하게 사진 전체로 확장
-            return Math.abs(dx) < ballSize * 0.5 && Math.abs(dy) < ballSize * 0.5;
+            const dx = Math.abs(x - width / 2);
+            const dy = Math.abs(y - (height / 2 + imgYOffset * (ballSize/800)));
+            // 히트박스를 인형의 세로 비율에 맞게 확장 (사각형 바운딩 박스 체크)
+            const hitW = ballSize * 0.48;
+            const hitH = (ballSize * 0.48) / dollAspect;
+            return dx < hitW && dy < hitH;
         }
 
         function triggerFileInput() { fileInput.click(); }
@@ -340,7 +339,7 @@
             const file = e.target.files[0]; 
             if (file) { 
                 const reader = new FileReader(); 
-                reader.onload = (ev) => { const img = new Image(); img.onload = () => { userImg = img; }; img.src = ev.target.result; }; 
+                reader.onload = (ev) => { const img = new Image(); img.onload = () => { userImg = img; resize(); }; img.src = ev.target.result; }; 
                 reader.readAsDataURL(file); 
             } 
         }
@@ -389,22 +388,40 @@
             }, 50);
         }
 
+        let dollAspect = 1;
         function resize() {
             width = window.innerWidth; height = window.innerHeight; 
             canvas.width = width * devicePixelRatio; canvas.height = height * devicePixelRatio; 
             canvas.style.width = width+'px'; canvas.style.height = height+'px'; 
             ctx.scale(devicePixelRatio, devicePixelRatio); 
-            if (width > height) ballSize = height * 0.95; else ballSize = width * 0.95;
+            
+            // 인형 이미지의 비율에 맞춰서 높이를 시원하게 확장
+            if (userImg) {
+                dollAspect = userImg.width / userImg.height;
+                // 세로 모드라면 높이를 기준으로 꽉 채우기 (여백 10% 제외)
+                if (width < height) {
+                    ballSize = Math.min(width * 0.95, (height * 0.9) * dollAspect);
+                } else {
+                    ballSize = height * 0.9;
+                }
+            } else {
+                ballSize = Math.min(width, height) * 0.9;
+            }
             initMesh();
         }
         function initMesh() { mesh = []; for (let r = 0; r <= meshRes; r++) for (let c = 0; c <= meshRes; c++) mesh.push({ ox: c/meshRes-0.5, oy: r/meshRes-0.5, cx: c/meshRes-0.5, cy: r/meshRes-0.5, vx: 0, vy: 0 }); }
         window.addEventListener('resize', resize); resize();
 
         function updatePhysics() {
-            const cx = width/2, cy = height/2, maxD = 0.12;
+            const cx = width/2, cy = height/2, maxD = 0.15;
             mesh.forEach(p => {
                 p.vx += (p.ox - p.cx) * 0.22; p.vy += (p.oy - p.cy) * 0.22;
-                activeTouches.forEach(pos => { const tx = (pos.x - cx)/ballSize, ty = (pos.y - cy)/ballSize; const d = Math.sqrt((p.cx-tx)**2 + (p.cy-ty)**2); if (d < 0.25) { const s = (0.25-d)*2.2; p.vx += (tx-p.cx)*s*0.45; p.vy += (ty-p.cy)*s*0.45; } });
+                activeTouches.forEach(pos => { 
+                    const tx = (pos.x - cx)/ballSize; 
+                    const ty = (pos.y - cy)/(ballSize / dollAspect); 
+                    const d = Math.sqrt((p.cx-tx)**2 + (p.cy-ty)**2); 
+                    if (d < 0.25) { const s = (0.25-d)*2.2; p.vx += (tx-p.cx)*s*0.45; p.vy += (ty-p.cy)*s*0.45; } 
+                });
                 p.vx *= 0.82; p.vy *= 0.82; p.cx += p.vx; p.cy += p.vy;
                 const d = Math.sqrt((p.cx-p.ox)**2 + (p.cy-p.oy)**2); if (d > maxD) { const r = maxD/d; p.cx = p.ox + (p.cx-p.ox)*r; p.cy = p.oy + (p.cy-p.oy)*r; }
             });
@@ -422,11 +439,22 @@
             ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); ctx.clearRect(0, 0, width, height); updatePhysics();
             const cx = width / 2, cy = height / 2, s = ballSize;
             if (userImg && !isPopped) {
-                // 원형 마스킹(clip)을 제거하여 사각형 사진 전체가 보이도록 함
-                for (let r = 0; r < meshRes; r++) { for (let c = 0; c < meshRes; c++) { const i0 = r*(meshRes+1)+c, i1 = i0+1, i2 = i0+(meshRes+1), i3 = i2+1; const p0 = mesh[i0], p1 = mesh[i1], p2 = mesh[i2], p3 = mesh[i3]; const getSX = (p) => (p.ox + 0.5) * userImg.width / imgZoom + (userImg.width * (1 - 1/imgZoom) / 2); const getSY = (p) => (p.oy + 0.5) * userImg.height / imgZoom + (userImg.height * (1 - 1/imgZoom) / 2) - imgYOffset/imgZoom; drawTriangle(userImg, cx + p0.cx*s, cy + p0.cy*s, cx + p1.cx*s, cy + p1.cy*s, cx + p2.cx*s, cy + p2.cy*s, getSX(p0), getSY(p0), getSX(p1), getSY(p1), getSX(p2), getSY(p2)); drawTriangle(userImg, cx + p1.cx*s, cy + p1.cy*s, cx + p3.cx*s, cy + p3.cy*s, cx + p2.cx*s, cy + p2.cy*s, getSX(p1), getSY(p1), getSX(p3), getSY(p3), getSX(p2), getSY(p2)); } }
+                for (let r = 0; r < meshRes; r++) { 
+                    for (let c = 0; c < meshRes; c++) { 
+                        const i0 = r*(meshRes+1)+c, i1 = i0+1, i2 = i0+(meshRes+1), i3 = i2+1; 
+                        const p0 = mesh[i0], p1 = mesh[i1], p2 = mesh[i2], p3 = mesh[i3]; 
+                        const getSX = (p) => (p.ox + 0.5) * userImg.width / imgZoom + (userImg.width * (1 - 1/imgZoom) / 2); 
+                        const getSY = (p) => (p.oy + 0.5) * userImg.height / imgZoom + (userImg.height * (1 - 1/imgZoom) / 2) - imgYOffset/imgZoom; 
+                        // 세로축 스케일링을 인형 비율에 맞춰 조정 (s / dollAspect)
+                        drawTriangle(userImg, cx + p0.cx*s, cy + p0.cy*(s/dollAspect), cx + p1.cx*s, cy + p1.cy*(s/dollAspect), cx + p2.cx*s, cy + p2.cy*(s/dollAspect), getSX(p0), getSY(p0), getSX(p1), getSY(p1), getSX(p2), getSY(p2)); 
+                        drawTriangle(userImg, cx + p1.cx*s, cy + p1.cy*(s/dollAspect), cx + p3.cx*s, cy + p3.cy*(s/dollAspect), cx + p2.cx*s, cy + p2.cy*(s/dollAspect), getSX(p1), getSY(p1), getSX(p3), getSY(p3), getSX(p2), getSY(p2)); 
+                    } 
+                }
                 activeTouches.forEach(pos => { const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, ballSize*0.2); g.addColorStop(0, 'rgba(0,0,0,0.04)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fill(); });
             } else if (!userImg && !isPopped) { 
-                ctx.beginPath(); ctx.arc(cx, cy, ballSize/3.5, 0, Math.PI*2); ctx.fillStyle = 'white'; ctx.fill(); ctx.strokeStyle = '#DDD'; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.fillStyle = '#BBB'; ctx.font = 'bold 12px Pretendard'; ctx.textAlign = 'center'; ctx.fillText('자신만의 인형을 올려보세요', cx, cy + 5); 
+                ctx.beginPath(); ctx.arc(cx, cy, ballSize/3.5, 0, Math.PI*2); ctx.fillStyle = 'white'; ctx.fill(); 
+                ctx.strokeStyle = '#DDD'; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.fillStyle = '#BBB'; ctx.font = 'bold 12px Pretendard'; ctx.textAlign = 'center'; 
+                ctx.fillText('자신만의 인형을 올려보세요', cx, cy + 5); 
             }
             cottonParticles.forEach(c => c.draw()); requestAnimationFrame(render);
         }
@@ -456,7 +484,7 @@
             const payload = { contents: [{ parts: [{ text: `고민: "${input}"` }] }], systemInstruction: { parts: [{ text: "당신은 아주 솔직하고 사이다 같은 위로를 건네는 인형 친구입니다. 가끔은 같이 욕도 해주고 속 시원한 한두 문장만 말해주세요." }] } };
             let text = "괜찮아요, 제가 곁에 있을게요.";
             try { const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }); const json = await res.json(); text = json.candidates?.[0]?.content?.parts?.[0]?.text || text; } catch(e){}
-            aiSubmit.disabled = false; aiSubmit.innerHTML = '위로 받기'; aiInput.value = ''; closeAI(); updateMessage(text, true);
+            aiSubmit.disabled = false; aiSubmit.innerHTML = '위로 받기'; aiInput.value = ''; closeAI(); updateMessage(text);
             if (!isMuted) {
                 const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
                 const ttsP = { contents: [{ parts: [{ text: `Say warmly: ${text}` }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } }, model: "gemini-2.5-flash-preview-tts" };
